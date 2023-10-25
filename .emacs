@@ -7,10 +7,52 @@
 
 ;; MELPA repo
 (require 'package)
-;;(add-to-list 'package-archives
-;;             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
+
+(require 'lsp-latex)
+;; "texlab" executable must be located at a directory contained in `exec-path'.
+;; If you want to put "texlab" somewhere else,
+;; you can specify the path to "texlab" as follows:
+;; (setq lsp-latex-texlab-executable "/home/alex/.cargo/bin/texlab")
+
+
+(with-eval-after-load "tex-mode"
+ (add-hook 'tex-mode-hook 'lsp)
+ (add-hook 'latex-mode-hook 'lsp)
+ (add-hook 'LaTeX-mode-hook 'lsp))
+
+;; For YaTeX
+(with-eval-after-load "yatex"
+ (add-hook 'yatex-mode-hook 'lsp))
+
+;; For bibtex
+(with-eval-after-load "bibtex"
+  (add-hook 'bibtex-mode-hook 'lsp))
+
+;; C/C++
+(add-hook 'c-mode-hook 'lsp)
+
+(add-hook 'after-init-hook 'global-company-mode)
+
+;; org mode anbd related
+(if (require 'toc-org nil t)
+    (progn
+      (add-hook 'org-mode-hook 'toc-org-mode)
+
+      ;; enable in markdown, too
+      ;;(add-hook 'markdown-mode-hook 'toc-org-mode)
+      ;;(define-key markdown-mode-map (kbd "\C-c\C-o") 'toc-org-markdown-follow-thing-at-point)
+      )
+  (warn "toc-org not found"))
+
+(add-hook 'org-mode-hook 'org-indent-mode)
+(use-package org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
 ;; ivy
 ;;(ivy-mode)
@@ -113,11 +155,12 @@
  '(delete-selection-mode t)
  '(ispell-dictionary nil)
  '(package-selected-packages
-   '(treemacs-projectile counsel all-the-icons-dired vterm ob-julia-vterm ivy nerd-icons-ibuffer all-the-icons projectile page-break-lines dashboard auctex))
+   '(company lsp-latex markdown-mode lsp-mode org-bullets toc-org rust-mode treemacs-projectile counsel all-the-icons-dired vterm ob-julia-vterm ivy nerd-icons-ibuffer all-the-icons projectile page-break-lines dashboard auctex))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Source Code Pro" :foundry "ADBO" :slant normal :weight normal :height 158 :width normal)))))
+ '(default ((t (:family "Source Code Pro" :foundry "ADBO" :slant normal :weight normal :height 120 :width normal)))))
+(put 'upcase-region 'disabled nil)
