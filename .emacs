@@ -12,6 +12,26 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
+;; (package-refresh-contents) ;; this line is commented 
+;; since refreshing packages is time-consuming and should be done on demand
+
+;; Declare packages
+(setq my-packages
+      '(company
+	counsel
+	ivy
+	ivy-rich
+	all-the-icons-ivy-rich
+        projectile
+        magit
+        markdown-mode
+	vterm))
+
+;; Iterate on packages and install missing ones
+(dolist (pkg my-packages)
+  (unless (package-installed-p pkg)
+    (package-install pkg)))
+
 ;; ivy
 ;;(ivy-mode)
 ;;(setq ivy-use-virtual-buffers t)
