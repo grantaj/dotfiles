@@ -5,7 +5,7 @@
 ;; pending delete mode
 (delete-selection-mode 1)
 
-;; MELPA repo
+;; packages and repositories
 (require 'package)
 
 (add-to-list 'package-archives
@@ -13,6 +13,30 @@
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
+
+;; (package-refresh-contents) ;; this line is commented 
+;; since refreshing packages is time-consuming and should be done on demand
+
+;; Declare packages
+(setq my-packages
+      '(company
+	counsel
+	ivy
+	ivy-rich
+	all-the-icons
+	all-the-icons-ivy-rich
+        projectile
+        magit
+        markdown-mode
+	vterm))
+
+;; Iterate on packages and install missing ones
+(dolist (pkg my-packages)
+  (unless (package-installed-p pkg)
+    (package-install pkg)))
+
+;; LSP hooks for languages I actually use
+;; LaTeX
 
 (require 'lsp-latex)
 ;; "texlab" executable must be located at a directory contained in `exec-path'.
@@ -26,10 +50,6 @@
  (add-hook 'latex-mode-hook 'lsp)
  (add-hook 'LaTeX-mode-hook 'lsp))
 
-;; For YaTeX
-(with-eval-after-load "yatex"
- (add-hook 'yatex-mode-hook 'lsp))
-
 ;; For bibtex
 (with-eval-after-load "bibtex"
   (add-hook 'bibtex-mode-hook 'lsp))
@@ -39,7 +59,7 @@
 
 (add-hook 'after-init-hook 'global-company-mode)
 
-;; org mode anbd related
+;; org mode and related
 (if (require 'toc-org nil t)
     (progn
       (add-hook 'org-mode-hook 'toc-org-mode)
@@ -75,10 +95,6 @@
   :config
   (ivy-mode))
 
-(use-package all-the-icons-ivy-rich
-  :ensure t
-  :init (all-the-icons-ivy-rich-mode 1))
-
 (use-package ivy-rich
   :after ivy
   :ensure t
@@ -92,6 +108,8 @@
 ;;                               'ivy-rich-switch-buffer-transformer)
   )
 
+;; Projectile
+
 (require 'projectile)
 ;; Recommended keymap prefix on Windows/Linux
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -101,6 +119,8 @@
 (use-package vterm
    :ensure t)
 
+;; Various fancy icons
+
 ;; All the icons
 (when (display-graphic-p)
   (require 'all-the-icons))
@@ -108,7 +128,12 @@
 (use-package all-the-icons-dired
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 
+(use-package all-the-icons-ivy-rich
+  :ensure t
+  :init (all-the-icons-ivy-rich-mode 1))
+
 ;; Dashboard
+
 ;;(setq dashboard-icon-type 'all-the-icons) ;; use `all-the-icons' package
 (setq dashboard-set-heading-icons t)
 (setq dashboard-set-file-icons t)
@@ -143,6 +168,8 @@
 
 
 (setq dashboard-set-footer nil)
+
+;; ----------------------------------------------------------------------
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
