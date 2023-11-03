@@ -16,20 +16,26 @@
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
-;; (package-refresh-contents) ;; this line is commented 
+;;(package-refresh-contents) ;; this line is commented 
 ;; since refreshing packages is time-consuming and should be done on demand
 
 ;; Declare packages
 (setq my-packages
-      '(company
+      '(use-package
+	dashboard
+	toc-org
+	org-bullets
+	company
 	counsel
 	ivy
 	ivy-rich
 	all-the-icons
 	all-the-icons-ivy-rich
+	all-the-icons-dired
         projectile
         magit
         markdown-mode
+	lsp-latex
 	vterm))
 
 ;; Iterate on packages and install missing ones
