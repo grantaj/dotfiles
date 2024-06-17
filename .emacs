@@ -16,7 +16,7 @@
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
-;;(package-refresh-contents) ;; this line is commented 
+;; (package-refresh-contents) ;; this line is commented 
 ;; since refreshing packages is time-consuming and should be done on demand
 
 ;; Declare packages
@@ -35,6 +35,8 @@
         projectile
         magit
         markdown-mode
+	auctex
+	auctex-latexmk
 	lsp-latex
 	vterm))
 
@@ -44,14 +46,16 @@
     (package-install pkg)))
 
 ;; LSP hooks for languages I actually use
+
 ;; LaTeX
+;; ****** Requires texlab lsp
+;; cargo install --locked --git https://github.com/latex-lsp/texlab.git
 
 (require 'lsp-latex)
 ;; "texlab" executable must be located at a directory contained in `exec-path'.
 ;; If you want to put "texlab" somewhere else,
 ;; you can specify the path to "texlab" as follows:
 ;; (setq lsp-latex-texlab-executable "/home/alex/.cargo/bin/texlab")
-
 
 (with-eval-after-load "tex-mode"
  (add-hook 'tex-mode-hook 'lsp)
@@ -63,7 +67,11 @@
   (add-hook 'bibtex-mode-hook 'lsp))
 
 ;; C/C++
+;; ****** Requires clangd
+;; sudo apt install clangd
 (add-hook 'c-mode-hook 'lsp)
+
+(add-hook 'python-mode-hook 'lsp)
 
 (add-hook 'after-init-hook 'global-company-mode)
 
@@ -130,6 +138,8 @@
 ;; Various fancy icons
 
 ;; All the icons
+;; to install the actual icons
+;; (all-the-icons-install-fonts)
 (when (display-graphic-p)
   (require 'all-the-icons))
 
@@ -186,16 +196,18 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
- '(custom-enabled-themes '(tsdh-dark))
+ '(custom-enabled-themes '(dracula))
+ '(custom-safe-themes
+   '("603a831e0f2e466480cdc633ba37a0b1ae3c3e9a4e90183833bc4def3421a961" default))
  '(delete-selection-mode t)
  '(ispell-dictionary nil)
  '(package-selected-packages
-   '(company lsp-latex markdown-mode lsp-mode org-bullets toc-org rust-mode treemacs-projectile counsel all-the-icons-dired vterm ob-julia-vterm ivy nerd-icons-ibuffer all-the-icons projectile page-break-lines dashboard auctex))
+   '(python-black auctex-latexmk company-auctex dracula-theme company lsp-latex markdown-mode lsp-mode org-bullets toc-org rust-mode treemacs-projectile counsel all-the-icons-dired vterm ob-julia-vterm ivy nerd-icons-ibuffer all-the-icons projectile page-break-lines dashboard auctex))
  '(tool-bar-mode nil))
+(put 'upcase-region 'disabled nil)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Source Code Pro" :foundry "ADBO" :slant normal :weight normal :height 120 :width normal)))))
-(put 'upcase-region 'disabled nil)
