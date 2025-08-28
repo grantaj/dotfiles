@@ -16,6 +16,7 @@
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
+
 ;;(package-refresh-contents) ;; this line is commented 
 ;; since refreshing packages is time-consuming and should be done on demand
 
@@ -81,6 +82,7 @@
 (add-hook 'org-mode-hook 'org-indent-mode)
 (use-package org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(require 'ox-md)
 
 ;; ivy
 ;;(ivy-mode)
@@ -188,6 +190,8 @@
    ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
  '(custom-enabled-themes '(tsdh-dark))
  '(delete-selection-mode t)
+ '(font-latex-fontify-script nil)
+ '(font-latex-fontify-sectioning 'color)
  '(ispell-dictionary nil)
  '(package-selected-packages
    '(company lsp-latex markdown-mode lsp-mode org-bullets toc-org rust-mode treemacs-projectile counsel all-the-icons-dired vterm ob-julia-vterm ivy nerd-icons-ibuffer all-the-icons projectile page-break-lines dashboard auctex))
@@ -197,5 +201,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Source Code Pro" :foundry "ADBO" :slant normal :weight normal :height 120 :width normal)))))
+ '(default ((t (:family "Source Code Pro" :foundry "ADBO" :slant normal :weight normal :height 143 :width normal)))))
 (put 'upcase-region 'disabled nil)
