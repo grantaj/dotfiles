@@ -300,8 +300,8 @@
 ;;
 ;; C-c i creates:
 ;;
-;;   Treemacs | Codex vterm
-;;            | repo shell vterm | source file
+;;   Treemacs | Codex eat
+;;            | repo shell eat | source file
 ;;
 ;; In practice this is three columns, with the middle column split into
 ;; Codex above and a normal repo terminal below.
@@ -322,6 +322,7 @@
   :config
   (setq vterm-shell (or (getenv "SHELL") "/bin/bash")))
 
+
 (defun my/project-root-or-default ()
   "Return project root if available, otherwise current directory."
   (or (when-let ((project (project-current nil)))
@@ -329,17 +330,12 @@
       (vc-root-dir)
       default-directory))
 
-(defun my/codex-vterm-buffer (dir)
-  "Create or return the Codex vterm buffer."
-  (let ((default-directory dir))
-    (or (get-buffer "*codex-term*")
-        (vterm "*codex-term*"))))
-
-(defun my/shell-vterm-buffer (dir)
-  "Create or return a normal repo shell vterm buffer."
-  (let ((default-directory dir))
-    (or (get-buffer "*repo-term*")
-        (vterm "*repo-term*"))))
+(defun my/show-eat-buffer (name dir)
+  "Display an eat terminal buffer NAME in the selected window, creating it if needed."
+  (if (get-buffer name)
+      (switch-to-buffer name)
+    (let ((default-directory dir))
+      (eat nil name))))
 
 (defun my/codex-layout ()
   "Open layout: Treemacs | Codex over shell | file."
@@ -361,11 +357,11 @@
 
         ;; Top middle: Codex terminal.
         (select-window middle-window)
-        (switch-to-buffer (my/codex-vterm-buffer root))
+        (my/show-eat-buffer "*codex-term*" root)
 
         ;; Bottom middle: ordinary repo terminal.
         (select-window shell-window)
-        (switch-to-buffer (my/shell-vterm-buffer root))
+        (my/show-eat-buffer "*repo-term*" root)
 
         ;; Right: source file.
         (select-window file-window)
