@@ -56,7 +56,9 @@ background on subsequent startups until all packages are compiled.
 
 ## 3. System packages
 
-Install a baseline on Ubuntu/Debian:
+### Ubuntu/Debian
+
+Install a baseline:
 
 ```sh
 sudo apt update
@@ -73,6 +75,48 @@ sudo apt install -y \
   cmake libtool libtool-bin libvterm-dev
 ```
 
+### macOS
+
+Install Homebrew first if it is not already installed:
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+On Apple Silicon, make sure Homebrew is on your shell path before continuing:
+
+```sh
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+Install Emacs and the command-line tools used by this config:
+
+```sh
+brew update
+brew install --cask emacs
+brew install \
+  git curl wget ripgrep fd \
+  llvm \
+  shellcheck \
+  python \
+  direnv \
+  aspell \
+  node \
+  mactex-no-gui \
+  latexmk \
+  cmake libtool libvterm
+```
+
+Notes:
+
+- `brew install --cask emacs` installs the GUI application. You can also use a
+  different Emacs build, such as `emacs-plus`, if you already prefer one.
+- Homebrew's `llvm` package provides `clangd`. If Emacs cannot find `clangd`,
+  add Homebrew's LLVM binary directory to your PATH/`exec-path` (see section 4).
+- `mactex-no-gui` is large. If you do not use LaTeX from Emacs, you can skip it.
+- On Intel Macs, Homebrew usually lives under `/usr/local` instead of
+  `/opt/homebrew`; adjust paths accordingly.
+
 Key items:
 
 | Package | Purpose |
@@ -80,29 +124,54 @@ Key items:
 | `ripgrep` | `consult-ripgrep` (`M-g r`) |
 | `clangd` | C/C++ language server |
 | `direnv` | Per-project env activation via `envrc` |
-| `aspell aspell-en` | Spell checking via `flyspell` |
+| `aspell aspell-en` / `aspell` | Spell checking via `flyspell` |
 | `latexmk` | AUCTeX build backend |
-| `libvterm-dev` + build tools | Needed to compile the vterm native module |
+| `libvterm-dev` / `libvterm` + build tools | Needed to compile the vterm native module |
 
 ### Font: Source Code Pro
 
-The config uses Source Code Pro at size 14.3. Install it:
+The config uses Source Code Pro at size 14.3. Install it.
+
+Ubuntu/Debian:
 
 ```sh
 sudo apt install fonts-sourcecodepro
 ```
 
+macOS with Homebrew:
+
+```sh
+brew install --cask font-source-code-pro
+```
+
 Or download from [Google Fonts](https://fonts.google.com/specimen/Source+Code+Pro)
-and place the `.ttf` files under `~/.local/share/fonts/`, then run `fc-cache -fv`.
+and install the `.ttf` files manually. On Linux, placing them under
+`~/.local/share/fonts/` and running `fc-cache -fv` is enough; on macOS, open the
+font files in Font Book and click **Install**.
 
 ---
 
 ## 4. User-local PATH
 
-Many tools install into user-local directories. Add these to `~/.bashrc`:
+Many tools install into user-local directories. Add these to your shell startup
+file. On Ubuntu/Debian this is usually `~/.bashrc`; on macOS this is usually
+`~/.zshrc`.
 
 ```sh
 export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$HOME/.cargo/bin:$PATH"
+```
+
+On Apple Silicon macOS, also add Homebrew if it is not already present:
+
+```sh
+eval "$(/opt/homebrew/bin/brew shellenv)"
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+```
+
+On Intel macOS, use `/usr/local` instead:
+
+```sh
+export PATH="/usr/local/opt/llvm/bin:$PATH"
 ```
 
 Configure npm to use a home-directory prefix (avoids `sudo`):
@@ -112,10 +181,11 @@ mkdir -p ~/.npm-global
 npm config set prefix ~/.npm-global
 ```
 
-Reload:
+Reload the appropriate shell file, for example:
 
 ```sh
-source ~/.bashrc
+source ~/.bashrc   # Ubuntu/Debian
+source ~/.zshrc    # macOS
 ```
 
 Verify Emacs can find tools with `M-:` in Emacs:
@@ -132,6 +202,14 @@ Add the missing directory in `.emacs`:
 ```elisp
 (add-to-list 'exec-path (expand-file-name "~/.local/bin"))
 (setenv "PATH" (concat (expand-file-name "~/.local/bin") ":" (getenv "PATH")))
+```
+
+For Apple Silicon macOS, the equivalent Homebrew paths are often useful:
+
+```elisp
+(add-to-list 'exec-path "/opt/homebrew/bin")
+(add-to-list 'exec-path "/opt/homebrew/opt/llvm/bin")
+(setenv "PATH" (concat "/opt/homebrew/bin:/opt/homebrew/opt/llvm/bin:" (getenv "PATH")))
 ```
 
 ---
@@ -199,6 +277,8 @@ formatting in LaTeX buffers.
 
 ### Install texlab (prebuilt binary)
 
+Ubuntu/Debian x86_64:
+
 ```sh
 mkdir -p ~/.local/bin
 cd /tmp
@@ -208,6 +288,21 @@ mv texlab ~/.local/bin/
 chmod +x ~/.local/bin/texlab
 texlab --version
 ```
+
+macOS Apple Silicon:
+
+```sh
+mkdir -p ~/.local/bin
+cd /tmp
+curl -L -o texlab-aarch64-macos.tar.gz \
+  https://github.com/latex-lsp/texlab/releases/latest/download/texlab-aarch64-macos.tar.gz
+tar -xzf texlab-aarch64-macos.tar.gz
+mv texlab ~/.local/bin/
+chmod +x ~/.local/bin/texlab
+texlab --version
+```
+
+macOS Intel users should use the `texlab-x86_64-macos.tar.gz` release instead.
 
 ### Install texlab via Cargo
 
@@ -239,8 +334,11 @@ clicking in the PDF jumps back to the source line.
 ## 8. vterm first-time setup
 
 `vterm` requires a native module. The first time the package is loaded Emacs
-will prompt to compile it (requires `cmake` and `libvterm-dev` from section 3).
-Accept the prompt. Subsequent startups use the pre-compiled module.
+will prompt to compile it. Accept the prompt. Subsequent startups use the
+pre-compiled module.
+
+Required system packages are installed in section 3: `cmake` and `libvterm-dev`
+on Ubuntu/Debian, or `cmake` and `libvterm` on macOS.
 
 `eat` is available as a fallback terminal (no compilation required) and is the
 default backend for the Codex integration.
