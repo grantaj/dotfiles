@@ -296,6 +296,17 @@
    'codex
    "Codex Emacs integration needs package-vc, which is built into Emacs 29+. Upgrade Emacs or install codex.el manually."))
 
+;;; Python LSP
+(use-package lsp-pyright
+  :ensure t
+  :after lsp-mode
+  :hook ((python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp-deferred)))
+         (python-ts-mode . (lambda ()
+                             (require 'lsp-pyright)
+                             (lsp-deferred)))))
+
 ;;; Codex IDE layout
 ;;
 ;; C-c i creates:
@@ -397,6 +408,15 @@
 (global-set-key (kbd "M-<down>")  #'windmove-down)
 
 (global-set-key (kbd "C-c e r") (lambda () (interactive) (load-file user-init-file)))
+
+;; macOS GUI Emacs often does not inherit the shell PATH.
+(when (eq system-type 'darwin)
+  (dolist (path '("/opt/homebrew/bin"
+                  "/usr/local/bin"
+                  "/Library/TeX/texbin"))
+    (when (file-directory-p path)
+      (add-to-list 'exec-path path)
+      (setenv "PATH" (concat path ":" (getenv "PATH"))))))
 
 (provide 'init)
 ;;; .emacs ends here
